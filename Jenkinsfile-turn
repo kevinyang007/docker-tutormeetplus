@@ -1,0 +1,17 @@
+node {
+    stage 'setup environment'
+    deleteDir()
+    env.PATH = "/usr/local/bin:${env.PATH}"    
+
+    stage 'checkout project'
+    sh '''git clone git@gitlab.tutorabc.com:TutorMeet/tutormeets-dockers.git'''
+
+    stage 'build project'
+    sh '''cd tutormeets-dockers
+          make build-docker-turn'''
+
+    stage 'push to ecr'
+    sh '''`aws ecr get-login`
+          cd tutormeets-dockers
+          make push-turn'''
+}

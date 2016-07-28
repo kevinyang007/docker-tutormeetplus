@@ -1,0 +1,45 @@
+version: '2'
+services:
+  kms:
+    image: "${registry}research/kms"
+#    environment:
+#      - EXTERNAL_IP=
+#      - MIN_PORT=49152
+#      - MAX_PORT=65535
+    network_mode: host
+    volumes:
+      - /record:/record
+  turn:
+    image: "${registry}research/turn"
+    network_mode: host
+#    environment:
+#      - EXTERNAL_IP=LOCAL_IP
+#      - LOCAL_IP=
+#      - USERNAME=kurento
+#      - PASSWORD=kurento
+#      - MIN_PORT=49152
+#      - MAX_PORT=65535
+    restart: on-failure:10
+  manarola:
+    image: "${registry}research/manarola"
+    ports:
+     - "3000:3000"
+    links: 
+     - redis
+  redis:
+    image: redis
+    volumes:
+      - /redis_data:/data
+  app:
+    image: "${registry}research/cagliari"
+#    environment:
+#      - EXTERNAL_IP=
+    links:
+     - kms
+     - turn
+     - manarola
+    dns: "8.8.8.8"
+    ports:
+     - "8080:8080"
+    volumes:
+      - /record:/record

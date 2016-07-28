@@ -1,0 +1,19 @@
+# cagliari
+#
+
+FROM node:0.12.15
+
+# Add source code
+ADD Cagliari /app
+WORKDIR /app
+
+# Install dependancies
+RUN apt-get update
+RUN apt-get install -y vim
+# For paper.js
+RUN apt-get install -y libcairo2-dev libpango1.0-dev libssl-dev libjpeg62-turbo-dev libgif-dev
+RUN npm i -g bower webpack pm2
+RUN npm i --unsafe-perm
+
+COPY ./entrypoint-cagliari.sh /entrypoint.sh
+CMD /entrypoint.sh
