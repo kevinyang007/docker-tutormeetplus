@@ -1,17 +1,18 @@
-FROM node:0.12.15
-
-# Add source code
-ADD TutorMeetS-Socket.IO /app
-WORKDIR /app
+FROM node:6
+MAINTAINER TingYao Hsu tingyaohsu@tutorabc.com
 
 # Install dependancies
-RUN apt-get update
-RUN apt-get install -y vim
-RUN npm i -g pm2 
+ADD TutorMeetS-Socket.IO /app
+WORKDIR /app
 RUN npm i --unsafe-perm
 
-# Build source
-RUN npm run build
+# Download prometheus node exporter
+ENV NODE_EXPORTER_VER 0.12.0
+ENV NODE_EXPORTER_ARCH linux-amd64
+ENV NODE_EXPORTER_PATH /tmp
+RUN wget -qO- https://github.com/prometheus/node_exporter/releases/download/${NODE_EXPORTER_VER}/node_exporter-${NODE_EXPORTER_VER}.${NODE_EXPORTER_ARCH}.tar.gz | tar -C ${NODE_EXPORTER_PATH} -zxv node_exporter-${NODE_EXPORTER_VER}.${NODE_EXPORTER_ARCH}/node_exporter
+RUN ln -s ${NODE_EXPORTER_PATH}/node_exporter-${NODE_EXPORTER_VER}.${NODE_EXPORTER_ARCH}/node_exporter /usr/local/bin/node_exporter
 
 # Start service 
+RUN npm run build
 CMD npm start
