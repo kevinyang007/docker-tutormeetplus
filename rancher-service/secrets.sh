@@ -1,0 +1,5 @@
+#!/bin/bash
+export RANCHER_ENVIRONMENT=Default
+export RANCHER_URL=http://172.16.3.123
+export RANCHER_ACCESS_KEY=4378291656B0FCCD2918
+export RANCHER_SECRET_KEY=adNLyYrQcXFVpx7c8gEKuBiiySq6NoPppfkrfzox

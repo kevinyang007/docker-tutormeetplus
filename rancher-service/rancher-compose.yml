@@ -1,0 +1,10 @@
+app:
+  scale: 1
+turn:
+  scale: 1
+kms:
+  scale: 1
+redis:
+  scale: 1
+manarola:
+  scale: 1

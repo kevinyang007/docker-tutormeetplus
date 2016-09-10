@@ -1,0 +1,39 @@
+app:
+  ports:
+    - 8080:8080
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+  image: 123923422374.dkr.ecr.us-east-1.amazonaws.com/research/cagliari
+  links:
+    - redis
+  volumes:
+    - /record:/record
+turn:
+  image: 123923422374.dkr.ecr.us-east-1.amazonaws.com/research/turn
+  net: host
+  labels:
+    io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+kms:
+  image: 123923422374.dkr.ecr.us-east-1.amazonaws.com/research/kms
+  volumes:
+    - /record:/record
+  net: host
+  labels:
+    io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+manarola:
+  ports:
+  - 3000:3000
+  - 9100:9100
+  - 9116:9116
+  labels:
+    io.rancher.container.pull_image: always
+  image: 123923422374.dkr.ecr.us-east-1.amazonaws.com/research/manarola
+  links:
+    - redis
+  labels:
+    io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+redis:
+  image: redis
+  volumes:
+    - /redis_data:/data
