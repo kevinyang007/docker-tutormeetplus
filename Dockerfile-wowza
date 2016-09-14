@@ -1,0 +1,10 @@
+# Wowza
+#
+
+FROM 123923422374.dkr.ecr.us-east-1.amazonaws.com/research/wowza-4.5.0
+
+# Copy config files to target
+COPY WowzaStreamingEngine/ /usr/local/WowzaStreamingEngine/
+
+COPY ./entrypoint-wowza.sh /entrypoint.sh
+CMD /entrypoint.sh

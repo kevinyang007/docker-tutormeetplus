@@ -30,6 +30,13 @@ services:
     image: redis
     volumes:
       - /redis_data:/data
+#    ports:
+#      - "6379:6379"
+  wowza:
+    image: "${registry}research/wowza"
+    network_mode: host
+    volumes:
+      - /sdpfiles:/sdpfiles
   app:
     image: "${registry}research/cagliari"
 #    environment:
