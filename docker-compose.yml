@@ -8,7 +8,7 @@ services:
 #      - MAX_PORT=65535
     network_mode: host
     volumes:
-      - /record:/record
+      - /mnt/s3/record:/mnt/s3/record
   turn:
     image: "${registry}research/turn"
     network_mode: host
@@ -49,4 +49,5 @@ services:
     ports:
      - "8080:8080"
     volumes:
-      - /record:/record
+      - /mnt/s3/record:/mnt/s3/record
+      - /sdpfiles:/sdpfiles
