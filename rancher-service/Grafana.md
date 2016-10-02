@@ -12,7 +12,7 @@ Query `container_memory_usage_bytes`
 
 Regex `/instance=\"(.*?)\"/`
 
-
+Legend `{{instance}} {{com_docker_compose_service}}` `{{io_rancher_stack_service_name}}`
 
 ### Memory Stats
 
@@ -30,7 +30,7 @@ Query `{instance=~"$node", com_docker_compose_project="tutormeetsdockers"}`
 
 
 
-### CPU usage Stats (TODO)
+### CPU usage Stats
 
 Add Graph panel 
 
@@ -39,6 +39,10 @@ Add Graph panel
 #### Filter by docker-compose
 
 `{com_docker_compose_project=~"tutormeetsdockers"}`
+
+Sumed by services
+
+`sum(rate(container_cpu_usage_seconds_total{instance=~"$node", com_docker_compose_project=~"tutor.*"}[5m])) by (instance, com_docker_compose_service)`
 
 #### Filter by Rancher service
 
