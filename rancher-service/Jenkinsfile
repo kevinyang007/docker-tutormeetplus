@@ -10,10 +10,6 @@ node {
             env.DOCKER_NAME = "manarola"
             env.DOCKER_REPO = "123923422374.dkr.ecr.us-east-1.amazonaws.com/research"
         }
-        
-        stage('Checkout') {
-            checkout scm
-        }
 
         stage('Deploy to AWS') {
             nodes = ["AWSTW-01", "AWSTW-02", "AWSTW-03", "AWSTW-04", "AWSTW-05"]
@@ -35,6 +31,7 @@ node {
 def deployNode(String nodeName) {
     return {
         node {
+            checkout scm
             dir('rancher-service') {
                 env.RANCHER_URL = 'http://52.193.72.117'
                 env.RANCHER_ACCESS_KEY = '0A39A3B77FDD12B9A0B6'

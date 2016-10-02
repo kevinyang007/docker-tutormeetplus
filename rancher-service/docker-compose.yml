@@ -26,7 +26,7 @@ manarola:
   ports:
   - 3000:3000
   - 9116:9116
-  image: ${DOCKER_REPO}/manarola:devops
+  image: ${DOCKER_REPO}/manarola:develop
   links:
     - redis
   labels:
