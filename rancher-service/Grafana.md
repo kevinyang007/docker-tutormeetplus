@@ -22,11 +22,11 @@ Add Graph panel
 
 #### Filter by Docker-compose
 
-Query `{instance=~"$node", com_docker_compose_project="tutormeetsdockers"}`
+Query `container_memory_usage_bytes{instance=~"$node", com_docker_compose_project="tutormeetsdockers"}`
 
 #### Filter by Rancher
 
-`{io_rancher_stack_name=~"Tutor.*"}`
+`container_memory_usage_bytes{instance=~"$node", io_rancher_stack_name=~"tutor.*"}`
 
 
 
@@ -46,14 +46,22 @@ Sumed by services
 
 #### Filter by Rancher service
 
-`{io_rancher_stack_name=~"Tutor.*"}`
+`{io_rancher_stack_name=~"tutor.*"}`
 
 Sumed by services
 
-`sum(rate(container_cpu_usage_seconds_total{instance=~"$node", io_rancher_stack_name=~"Tutor.*"}[5m])) by (instance, io_rancher_stack_service_name)`
+`sum(rate(container_cpu_usage_seconds_total{instance=~"$node", io_rancher_stack_name=~"tutor.*"}[5m])) by (instance, io_rancher_stack_service_name)`
 
 
 
 ### Network bandwidth
 
-Sum by services `sum(container_network_transmit_bytes_total{instance=~"$node", com_docker_compose_project="tutormeetsdockers"}) by (com_docker_compose_service)`
+Sum by services with Transmit bytes `sum(container_network_transmit_bytes_total{instance=~"$node", com_docker_compose_project="tutormeetsdockers"}) by (instance, com_docker_compose_service)`
+
+`sum(container_network_transmit_bytes_total{instance=~"$node", io_rancher_stack_name=~"tutor.*"}) by (instance, io_rancher_stack_service_name)`
+
+
+
+Sum by services with Receive bytes `sum(container_network_receive_bytes_total{instance=~"$node", com_docker_compose_project="tutormeetsdockers"}) by (instance, com_docker_compose_service)`
+
+`sum(container_network_receive_bytes_total{instance=~"$node", io_rancher_stack_name=~"tutor.*"}) by (instance, io_rancher_stack_service_name)`
