@@ -1,0 +1,76 @@
+node {
+    
+    try {
+        notifyBuild('STARTED')
+
+        stage('Setup Environment') {
+            deleteDir()
+            env.PYENV_VERSION = "2.7"
+            env.PATH = "/usr/local/bin:${env.PATH}"
+            env.DOCKER_NAME = "manarola"
+            env.DOCKER_REPO = "123923422374.dkr.ecr.us-east-1.amazonaws.com/research"
+        }
+        
+        stage('Checkout') {
+            checkout scm
+        }
+
+        stage('Deploy to AWS') {
+            nodes = ["AWSTW-01", "AWSTW-02", "AWSTW-03", "AWSTW-04", "AWSTW-05"]
+            deployInParallel = [:]
+            for (int i = 0; i < nodes.size(); i++) {
+                deployInParallel[i] = deployNode(nodes[i])
+            }
+            parallel deployInParallel
+        }
+
+    } catch (e) {
+        currentBuild.result = "FAILED"
+        throw e
+    } finally {
+        notifyBuild(currentBuild.result)
+    }
+}
+
+def deployNode(String nodeName) {
+    return {
+        node {
+            dir('rancher-service') {
+                env.RANCHER_URL = 'http://52.193.72.117'
+                env.RANCHER_ACCESS_KEY = '0A39A3B77FDD12B9A0B6'
+                env.RANCHER_SECRET_KEY = '1FUcGjUBfhGkTGjVa6RSj7pa6uGjcRkcfG21DT3j'
+                env.RANCHER_HOSTNAME = nodeName
+                env.COMPOSE_PROJECT_NAME = 'TutorMeetPlus-' + nodeName
+                sh 'rancher-compose up --force-upgrade -p -c -d'
+            }
+        }
+    }
+}
+
+def notifyBuild(String buildStatus = 'STARTED') {
+    // build status of null means successful
+    buildStatus =  buildStatus ?: 'SUCCESSFUL'
+
+    // Default values
+    def colorName = 'RED'
+    def colorCode = '#FF0000'
+    def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+    def summary = "${subject} (${env.BUILD_URL})"
+    def details = """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+    <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>"""
+
+    // Override default values based on build status
+    if (buildStatus == 'STARTED') {
+        color = 'YELLOW'
+        colorCode = '#FFFF00'
+    } else if (buildStatus == 'SUCCESSFUL') {
+        color = 'GREEN'
+        colorCode = '#00FF00'
+    } else {
+        color = 'RED'
+        colorCode = '#FF0000'
+    }
+
+    // Send notifications
+    slackSend (color: colorCode, message: summary)
+}

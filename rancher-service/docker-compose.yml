@@ -1,41 +1,44 @@
 app:
   ports:
     - 8080:8080
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=AWS-TW-01
-  image: 123923422374.dkr.ecr.us-east-1.amazonaws.com/research/cagliari:develop
+  image: ${DOCKER_REPO}/cagliari:develop
   links:
     - redis
   volumes:
     - /mnt/s3/record:/mnt/s3/record
+    - /sdpfiles:/sdpfiles
+  labels:
+    io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=${RANCHER_HOSTNAME}
 turn:
-  image: 123923422374.dkr.ecr.us-east-1.amazonaws.com/research/turn
+  image: ${DOCKER_REPO}/turn
   net: host
   labels:
-    io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=AWS-TW-01
+    io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=${RANCHER_HOSTNAME}
 kms:
-  image: 123923422374.dkr.ecr.us-east-1.amazonaws.com/research/kms
+  image: ${DOCKER_REPO}/kms
   volumes:
     - /mnt/s3/record:/mnt/s3/record
     - /sdpfiles:/sdpfiles
   net: host
   labels:
-    io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=AWS-TW-01
+    io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=${RANCHER_HOSTNAME}
 manarola:
   ports:
   - 3000:3000
-  - 9100:9100
   - 9116:9116
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=AWS-TW-01
-  image: 123923422374.dkr.ecr.us-east-1.amazonaws.com/research/manarola:develop
+  image: ${DOCKER_REPO}/manarola:devops
   links:
     - redis
+  labels:
+    io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=${RANCHER_HOSTNAME}
+# wowza:
+#   image: "${DOCKER_REPO}/wowza"
+#   network_mode: host
+#   volumes:
+#     - /sdpfiles:/sdpfiles
 redis:
   image: redis
   volumes:
     - /redis_data:/data
   labels:
-    io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=AWS-TW-01
+    io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=${RANCHER_HOSTNAME}
