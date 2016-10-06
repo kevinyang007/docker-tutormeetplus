@@ -37,17 +37,29 @@ services:
     network_mode: host
     volumes:
       - /sdpfiles:/sdpfiles
+
+  nginx:
+    image: "${registry}research/nginx"
+    ports:
+     - "443:443"
+     - "3000:3000"
+    environment:
+     - CAGLIARI_IP=172.31.24.162
+     - CAGLIARI_PORT=443
+     - MANAROLA_IP=172.31.24.162
+     - MANAROLA_PORT=3000
+#     - NGINX_STATUS_ALLOW_IP=metrics.dev.tutormeet.plus
+     - NGINX_STATUS_ALLOW_IP=52.196.246.136
   app:
     image: "${registry}research/cagliari"
 #    environment:
-#      - EXTERNAL_IP=
+#      - PORT=443
     links:
      - kms
      - turn
      - manarola
-    dns: "8.8.8.8"
     ports:
-     - "8080:8080"
+     - "443:443"
     volumes:
       - /mnt/s3/record:/mnt/s3/record
       - /sdpfiles:/sdpfiles
