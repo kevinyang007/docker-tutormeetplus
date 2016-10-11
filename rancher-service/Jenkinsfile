@@ -12,7 +12,8 @@ node {
         }
 
         stage('Deploy to AWS') {
-            nodes = ["AWSTW-01", "AWSTW-02", "AWSTW-03", "AWSTW-04", "AWSTW-05"]
+            // nodes = ["AWSTW-01", "AWSTW-02", "AWSTW-03", "AWSTW-04", "AWSTW-05"]
+            nodes = ["AWSTW-01", "AWSTW-02", "AWSTW-04"]
             deployInParallel = [:]
             for (int i = 0; i < nodes.size(); i++) {
                 deployInParallel[i] = deployNode(nodes[i])

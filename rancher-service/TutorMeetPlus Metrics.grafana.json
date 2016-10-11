@@ -1,0 +1,461 @@
+{
+  "id": 12,
+  "title": "TutorMeetPlus Metrics",
+  "originalTitle": "TutorMeetPlus Metrics",
+  "tags": [],
+  "style": "dark",
+  "timezone": "browser",
+  "editable": true,
+  "hideControls": false,
+  "sharedCrosshair": false,
+  "rows": [
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "Prometheus",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 1,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(rate(container_cpu_usage_seconds_total{instance=~\"$node\", com_docker_compose_project=~\"tutor.*\"}[5m])) by (instance, com_docker_compose_service)",
+              "intervalFactor": 2,
+              "legendFormat": "{{instance}} {{com_docker_compose_service}}",
+              "refId": "A",
+              "step": 240
+            },
+            {
+              "expr": "sum(rate(container_cpu_usage_seconds_total{instance=~\"$node\", io_rancher_stack_name=~\"tutor.*\"}[5m])) by (instance, io_rancher_stack_service_name)",
+              "intervalFactor": 2,
+              "legendFormat": "{{io_rancher_stack_service_name}}",
+              "refId": "B",
+              "step": 240
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "CPU Usage",
+          "tooltip": {
+            "msResolution": true,
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "show": true
+          },
+          "yaxes": [
+            {
+              "format": "percentunit",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "Prometheus",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 2,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "container_memory_usage_bytes{instance=~\"$node\", com_docker_compose_project=\"tutormeetsdockers\"}",
+              "intervalFactor": 2,
+              "legendFormat": "{{instance}} {{com_docker_compose_service}}",
+              "refId": "A",
+              "step": 240
+            },
+            {
+              "expr": "container_memory_usage_bytes{instance=~\"$node\", io_rancher_stack_name=~\"tutor.*\"}",
+              "intervalFactor": 2,
+              "legendFormat": "{{io_rancher_stack_service_name}}",
+              "refId": "B",
+              "step": 240
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Memory Usage",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "show": true
+          },
+          "yaxes": [
+            {
+              "format": "bytes",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "title": "Row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "Prometheus",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 3,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum( rate( container_network_receive_bytes_total{instance=~\"$node\", com_docker_compose_project=\"tutormeetsdockers\"}[5m]) ) by (instance, com_docker_compose_service)",
+              "hide": true,
+              "intervalFactor": 2,
+              "legendFormat": "{{instance}} {{com_docker_compose_service}}",
+              "refId": "A",
+              "step": 240
+            },
+            {
+              "expr": "sum( rate(container_network_receive_bytes_total{instance=~\"$node\", io_rancher_stack_name=~\"tutor.*\"}[5m]) ) by (instance, io_rancher_stack_service_name)",
+              "hide": true,
+              "intervalFactor": 2,
+              "legendFormat": "{{io_rancher_stack_service_name}}",
+              "refId": "B",
+              "step": 240
+            },
+            {
+              "expr": "rate(container_network_receive_bytes_total{instance=~\"$node\", io_rancher_stack_name=~\"tutor.*\"}[5m])",
+              "intervalFactor": 2,
+              "legendFormat": "{{io_rancher_stack_service_name}} {{interface}}",
+              "metric": "node",
+              "refId": "C",
+              "step": 240
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Packet In",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "show": true
+          },
+          "yaxes": [
+            {
+              "format": "Bps",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "Prometheus",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 4,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(rate(container_network_transmit_bytes_total{instance=~\"$node\", com_docker_compose_project=\"tutormeetsdockers\"}[5m])) by (instance, com_docker_compose_service)",
+              "intervalFactor": 2,
+              "legendFormat": "{{instance}} {{com_docker_compose_service}}",
+              "refId": "A",
+              "step": 240
+            },
+            {
+              "expr": "sum(rate(container_network_transmit_bytes_total{instance=~\"$node\", io_rancher_stack_name=~\"tutor.*\"}[5m])) by (instance, io_rancher_stack_service_name)",
+              "intervalFactor": 2,
+              "legendFormat": "{{io_rancher_stack_service_name}}",
+              "refId": "B",
+              "step": 240
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Packet Out",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "show": true
+          },
+          "yaxes": [
+            {
+              "format": "Bps",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "title": "New row"
+    }
+  ],
+  "time": {
+    "from": "2016-10-05T22:33:43.219Z",
+    "to": "2016-10-06T22:33:43.219Z"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "templating": {
+    "list": [
+      {
+        "allFormat": "glob",
+        "current": {
+          "text": "52.197.221.245:9104",
+          "value": "52.197.221.245:9104",
+          "selected": true
+        },
+        "datasource": "Prometheus",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Host",
+        "multi": true,
+        "name": "node",
+        "options": [
+          {
+            "text": "All",
+            "value": "$__all",
+            "selected": false
+          },
+          {
+            "text": "52.193.113.198:9104",
+            "value": "52.193.113.198:9104",
+            "selected": false
+          },
+          {
+            "text": "52.193.229.181:9104",
+            "value": "52.193.229.181:9104",
+            "selected": false
+          },
+          {
+            "text": "52.193.72.117:9104",
+            "value": "52.193.72.117:9104",
+            "selected": false
+          },
+          {
+            "text": "52.196.246.136:9104",
+            "value": "52.196.246.136:9104",
+            "selected": false
+          },
+          {
+            "text": "52.197.221.245:9104",
+            "value": "52.197.221.245:9104",
+            "selected": true
+          }
+        ],
+        "query": "container_memory_usage_bytes",
+        "refresh": 1,
+        "regex": "/instance=\\\"(.*?)\\\"/",
+        "type": "query"
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "refresh": false,
+  "schemaVersion": 12,
+  "version": 2,
+  "links": []
+}

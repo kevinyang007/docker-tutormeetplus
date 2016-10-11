@@ -56,12 +56,12 @@ Sumed by services
 
 ### Network bandwidth
 
-Sum by services with Transmit bytes `sum(container_network_transmit_bytes_total{instance=~"$node", com_docker_compose_project="tutormeetsdockers"}) by (instance, com_docker_compose_service)`
+Sum by services with Transmit bytes `sum(rate(container_network_transmit_bytes_total{instance=~"$node", com_docker_compose_project="tutormeetsdockers"}[5m])) by (instance, com_docker_compose_service)`
 
-`sum(container_network_transmit_bytes_total{instance=~"$node", io_rancher_stack_name=~"tutor.*"}) by (instance, io_rancher_stack_service_name)`
+`sum(rate(container_network_transmit_bytes_total{instance=~"$node", io_rancher_stack_name=~"tutor.*"}[5m])) by (instance, io_rancher_stack_service_name)`
 
 
 
-Sum by services with Receive bytes `sum(container_network_receive_bytes_total{instance=~"$node", com_docker_compose_project="tutormeetsdockers"}) by (instance, com_docker_compose_service)`
+Sum by services with Receive bytes `sum(rate(container_network_receive_bytes_total{instance=~"$node", com_docker_compose_project="tutormeetsdockers"}[5m])) by (instance, com_docker_compose_service)`
 
-`sum(container_network_receive_bytes_total{instance=~"$node", io_rancher_stack_name=~"tutor.*"}) by (instance, io_rancher_stack_service_name)`
+`sum( rate(container_network_receive_bytes_total{instance=~"$node", io_rancher_stack_name=~"tutor.*"}[5m]) ) by (instance, io_rancher_stack_service_name)`

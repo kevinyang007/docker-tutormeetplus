@@ -1,4 +1,5 @@
 #!/bin/bash
+export DOCKER_REPO="123923422374.dkr.ecr.us-east-1.amazonaws.com/research"
 export RANCHER_ENVIRONMENT=Default
 export RANCHER_URL=http://52.193.72.117
 export RANCHER_ACCESS_KEY=0A39A3B77FDD12B9A0B6
