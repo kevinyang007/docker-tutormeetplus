@@ -9,6 +9,7 @@ services:
     network_mode: host
     volumes:
       - /mnt/s3/record:/mnt/s3/record
+      - /mnt/nfs/record:/mnt/nfs/record
   turn:
     image: "${registry}research/turn"
     network_mode: host
@@ -62,4 +63,5 @@ services:
      - "443:443"
     volumes:
       - /mnt/s3/record:/mnt/s3/record
+      - /mnt/nfs/record:/mnt/nfs/record
       - /sdpfiles:/sdpfiles
