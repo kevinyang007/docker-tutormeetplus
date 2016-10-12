@@ -1,0 +1,63 @@
+app:
+  ports:
+    - 8080:8080
+  image: ${DOCKER_REPO}/cagliari:develop
+  links:
+    - redis-master:redis
+  volumes:
+    - /mnt/s3/record:/mnt/s3/record
+    - /mnt/nfs/record:/mnt/nfs/record
+    - /sdpfiles:/sdpfiles
+  labels:
+    io.rancher.scheduler.global: true
+turn:
+  image: ${DOCKER_REPO}/turn
+  net: host
+  labels:
+    io.rancher.scheduler.global: true
+kms:
+  image: ${DOCKER_REPO}/kms
+  volumes:
+    - /mnt/s3/record:/mnt/s3/record
+    - /mnt/nfs/record:/mnt/nfs/record
+    - /sdpfiles:/sdpfiles
+  net: host
+  labels:
+    io.rancher.scheduler.global: true
+manarola:
+  ports:
+  - 3000:3000
+  - 9116:9116
+  image: ${DOCKER_REPO}/manarola:develop
+  links:
+    - redis-master:redis
+  labels:
+    io.rancher.scheduler.global: true
+# wowza:
+#   image: "${DOCKER_REPO}/wowza"
+#   network_mode: host
+#   volumes:
+#     - /sdpfiles:/sdpfiles
+redis-master:
+  image: redis
+  ports: 
+    - 6379:6379
+  volumes:
+    - /redis_data:/data
+redis-slave:
+  image: redis
+  command: redis-server --slaveof redis-master 6379
+  links:
+    - redis-master
+  labels:
+    io.rancher.scheduler.global: true
+redis-sentinel:
+  image: erichsu/redis-sentinel
+  environment:
+    - SENTINEL_DOWN_AFTER=5000
+    - SENTINEL_FAILOVER=5000    
+  links:
+    - redis-master
+    - redis-slave
+  labels:
+    io.rancher.scheduler.global: true

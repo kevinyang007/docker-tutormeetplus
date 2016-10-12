@@ -1,0 +1,23 @@
+master:
+  image: redis
+  port: 
+    - 6379:6379
+  volumes:
+    - /redis_data:/data
+  labels:
+    io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=${RANCHER_HOSTNAME}
+slave:
+  image: redis
+  command: redis-server --slaveof redis-master 6379
+  scale: 2
+  links:
+    - master:redis-master
+sentinel:
+  scale: 3
+  image: erichsu/redis-sentinel
+  environment:
+    - SENTINEL_DOWN_AFTER=5000
+    - SENTINEL_FAILOVER=5000    
+  links:
+    - master:redis-master
+    - slave
