@@ -52,7 +52,7 @@ services:
 #     - NGINX_STATUS_ALLOW_IP=metrics.dev.tutormeet.plus
      - NGINX_STATUS_ALLOW_IP=52.196.246.136
   app:
-    image: "${registry}research/cagliari"
+    image: "${registry}research/cagliari:develop"
 #    environment:
 #      - PORT=443
     links:

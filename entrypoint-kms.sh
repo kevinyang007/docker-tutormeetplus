@@ -12,6 +12,8 @@ USERNAME=${TURN_USERNAME:=kurento}
 PASSWORD=${TURN_PASSWORD:=kurento}
 echo "turnURL="${USERNAME}":"${PASSWORD}"@"${TURNIP}":3478" >> /etc/kurento/modules/kurento/WebRtcEndpoint.conf.ini
 
+echo "pemCertificateRSA=/certificate.pem" >> /etc/kurento/modules/kurento/WebRtcEndpoint.conf.ini
+
 MINPORT=${MIN_PORT:=49152}
 MAXPORT=${MAX_PORT:=65535}
 echo "minPort="${MINPORT} > /etc/kurento/modules/kurento/BaseRtpEndpoint.conf.ini

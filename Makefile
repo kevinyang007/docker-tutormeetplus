@@ -7,7 +7,7 @@ echo:
 	@echo ${tag}
 
 build-docker-kms:
-	docker build -t ${registry}research/kms -f Dockerfile-kms-dev .
+	docker build -t ${registry}research/kms -f Dockerfile-kms .
 
 build-docker-turn:
 	docker build -t ${registry}research/turn -f Dockerfile-turn .
