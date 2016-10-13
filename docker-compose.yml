@@ -44,11 +44,14 @@ services:
     ports:
      - "443:443"
      - "3000:3000"
+     - "3030:3030"
     environment:
      - CAGLIARI_IP=172.31.24.162
      - CAGLIARI_PORT=443
      - MANAROLA_IP=172.31.24.162
      - MANAROLA_PORT=3000
+     - MATERIAL_IP=172.16.7.180
+     - MATERIAL_PORT=3030
 #     - NGINX_STATUS_ALLOW_IP=metrics.dev.tutormeet.plus
      - NGINX_STATUS_ALLOW_IP=52.196.246.136
   app:
