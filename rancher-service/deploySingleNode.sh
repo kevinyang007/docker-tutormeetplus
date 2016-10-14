@@ -10,7 +10,7 @@ case $SERVICE in
 	. secrets.sh
 	;;
 	*)
-	echo ./deploy.sh <aws|tutor> <hostname1 [hostname2...]>
+	echo "./deploy.sh <aws|tutor> <hostname1 [hostname2...]>"
 	;;
 esac
 

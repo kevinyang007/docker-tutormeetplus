@@ -1,6 +1,4 @@
 app:
-  ports:
-    - 8080:8080
   image: ${DOCKER_REPO}/cagliari:develop
   links:
     - redis-master:redis
@@ -9,11 +7,12 @@ app:
     - /mnt/nfs/record:/mnt/nfs/record
     - /sdpfiles:/sdpfiles
   labels:
-    io.rancher.scheduler.global: true
+    io.rancher.container.pull_image: always
 turn:
   image: ${DOCKER_REPO}/turn
   net: host
   labels:
+    io.rancher.container.pull_image: always
     io.rancher.scheduler.global: true
 kms:
   image: ${DOCKER_REPO}/kms
@@ -23,21 +22,41 @@ kms:
     - /sdpfiles:/sdpfiles
   net: host
   labels:
+    io.rancher.container.pull_image: always
     io.rancher.scheduler.global: true
 manarola:
   ports:
-  - 3000:3000
   - 9116:9116
   image: ${DOCKER_REPO}/manarola:develop
   links:
     - redis-master:redis
   labels:
-    io.rancher.scheduler.global: true
+    io.rancher.container.pull_image: always
 # wowza:
 #   image: "${DOCKER_REPO}/wowza"
-#   network_mode: host
+#   net: host
 #   volumes:
 #     - /sdpfiles:/sdpfiles
+#  labels:
+#    io.rancher.container.pull_image: always
+nginx:
+  image: "${DOCKER_REPO}/nginx"
+  ports:
+   - "443:443"
+   - "3000:3000"
+   - "3030:3030"
+  environment:
+   - CAGLIARI_IP=172.31.24.162
+   - CAGLIARI_PORT=443
+   - MANAROLA_IP=172.31.24.162
+   - MANAROLA_PORT=3000
+#     - NGINX_STATUS_ALLOW_IP=metrics.dev.tutormeet.plus
+   - NGINX_STATUS_ALLOW_IP=52.196.246.136
+   - MATERIAL_IP=172.16.7.180
+   - MATERIAL_PORT=3030
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.global: true
 redis-master:
   image: redis
   ports: 

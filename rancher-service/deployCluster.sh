@@ -20,4 +20,4 @@ export COMPOSE_PROJECT_NAME=tutormeetplus
 echo 
 echo Deploy on $SERVICE
 echo
-rancher-compose up -p -u -c -d
+rancher-compose up -p -d -u -c
