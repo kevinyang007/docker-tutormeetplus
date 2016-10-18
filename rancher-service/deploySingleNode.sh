@@ -16,6 +16,7 @@ esac
 
 shift
 
+export COMPOSE_FILE=docker-compose.yml
 for host in $@; do
 	export RANCHER_HOSTNAME=$host
 	echo 

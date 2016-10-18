@@ -35,9 +35,11 @@ manarola:
     io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=${RANCHER_HOSTNAME}
 # wowza:
 #   image: "${DOCKER_REPO}/wowza"
-#   network_mode: host
+#   net: host
 #   volumes:
 #     - /sdpfiles:/sdpfiles
+#   labels:
+#     io.rancher.scheduler.affinity:host_label: io.rancher.host.hostname=${RANCHER_HOSTNAME}
 redis:
   image: redis
   volumes:
