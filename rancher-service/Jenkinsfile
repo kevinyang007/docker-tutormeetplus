@@ -13,7 +13,7 @@ node {
 
         stage('Deploy to AWS') {
             // nodes = ["AWSTW-01", "AWSTW-02", "AWSTW-03", "AWSTW-04", "AWSTW-05"]
-            nodes = ["AWSTW-01", "AWSTW-02", "AWSTW-04"]
+            nodes = ["AWSTW-02"]
             deployInParallel = [:]
             for (int i = 0; i < nodes.size(); i++) {
                 deployInParallel[i] = deployNode(nodes[i])
@@ -34,12 +34,7 @@ def deployNode(String nodeName) {
         node {
             checkout scm
             dir('rancher-service') {
-                env.RANCHER_URL = 'http://52.193.72.117'
-                env.RANCHER_ACCESS_KEY = '0A39A3B77FDD12B9A0B6'
-                env.RANCHER_SECRET_KEY = '1FUcGjUBfhGkTGjVa6RSj7pa6uGjcRkcfG21DT3j'
-                env.RANCHER_HOSTNAME = nodeName
-                env.COMPOSE_PROJECT_NAME = 'TutorMeetPlus-' + nodeName
-                sh 'rancher-compose up --force-upgrade -p -c -d'
+                sh './deploySingleNode.sh aws $nodeName'
             }
         }
     }
