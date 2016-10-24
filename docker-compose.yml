@@ -52,6 +52,7 @@ services:
      - MANAROLA_PORT=3000
      - MATERIAL_IP=172.16.7.180
      - MATERIAL_PORT=3030
+     - MATERIAL_MAX_BODY_SIZE=30M
 #     - NGINX_STATUS_ALLOW_IP=metrics.dev.tutormeet.plus
      - NGINX_STATUS_ALLOW_IP=52.196.246.136
   app:
