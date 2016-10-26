@@ -1,17 +1,19 @@
 node {
-    stage 'setup environment'
+  stage('setup environment') {
     deleteDir()
     env.PATH = "/usr/local/bin:${env.PATH}"    
+  }
 
-    stage 'checkout project'
+  stage('checkout project') {
     checkout scm
+  }
 
-    stage 'build project'
-    sh '''cd tutormeets-dockers
-          make build-docker-nginx'''
+  stage('build project') {
+    sh 'make build-docker-nginx'
+  }
 
-    stage 'push to ecr'
-    sh '''`aws ecr get-login`
-          cd tutormeets-dockers
-          make push-nginx'''
+  stage('push to ecr') {
+    sh '$(aws ecr get-login)'
+    sh 'make push-nginx'
+  }
 }
