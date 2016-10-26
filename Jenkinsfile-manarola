@@ -4,9 +4,9 @@ node {
     env.PATH = "/usr/local/bin:${env.PATH}"    
 
     stage 'checkout project'
-    sh '''git clone git@gitlab.tutorabc.com:TutorMeet/tutormeets-dockers.git
-          cd tutormeets-dockers
-          git clone git@gitlab.tutorabc.com:TutorMeet/TutorMeetS-Socket.IO.git'''
+    checkout scm
+    cd tutormeets-dockers
+    git clone git@gitlab.tutorabc.com:TutorMeet/TutorMeetS-Socket.IO.git'''
 
     stage 'build project'
     sh '''cd tutormeets-dockers
