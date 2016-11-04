@@ -12,13 +12,28 @@ node {
         }
 
         stage('Deploy to AWS') {
-            // nodes = ["AWSTW-01", "AWSTW-02", "AWSTW-03", "AWSTW-04", "AWSTW-05"]
-            nodes = ["AWSTW-02"]
-            deployInParallel = [:]
-            for (int i = 0; i < nodes.size(); i++) {
-                deployInParallel[i] = deployNode(nodes[i])
+            
+            mode = input message: 'Single or Cluster', parameters: [
+                    choice(choices: 'Single Node\nCluster', description: '', name: 'type'),
+                    string(defaultValue: '', name:'options')]
+            
+            if (mode['type'] == 'Cluster') {
+
+                checkout scm
+                dir('rancher-service') {
+                    sh "./deployCluster.sh $mode['options']"
+                }
+
+            } else {
+                // nodes = ["AWSTW-01", "AWSTW-02", "AWSTW-03", "AWSTW-04", "AWSTW-05"]
+                nodes = mode['options'].split(',')
+                deployInParallel = [:]
+                for (int i = 0; i < nodes.size(); i++) {
+                    deployInParallel[i] = deployNode(nodes[i])
+                }
+                parallel deployInParallel
             }
-            parallel deployInParallel
+            
         }
 
     } catch (e) {
