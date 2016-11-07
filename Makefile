@@ -1,22 +1,22 @@
 #!/bin/sh
 
-export registry=123923422374.dkr.ecr.us-east-1.amazonaws.com/
-export tag=latest
+registry ?= 123923422374.dkr.ecr.us-east-1.amazonaws.com/research
+tag ?= $(TAG)
 
 echo:
-	@echo ${tag}
+	@echo "\nRegistry: $(registry)\nTag: $(tag)\n"
 
 build-docker-kms:
-	docker build -t ${registry}research/kms -f Dockerfile-kms .
+	docker build -t $(registry)/kms:$(tag) -f Dockerfile-kms .
 
 build-docker-turn:
-	docker build -t ${registry}research/turn -f Dockerfile-turn .
+	docker build -t $(registry)/turn:$(tag) -f Dockerfile-turn .
 
 build-docker-wowza:
-	docker build -t ${registry}research/wowza -f Dockerfile-wowza .
+	docker build -t $(registry)/wowza:$(tag) -f Dockerfile-wowza .
 
 build-docker-nginx:
-	docker build -t ${registry}research/nginx -f Dockerfile-nginx .
+	docker build -t $(registry)/nginx -f Dockerfile-nginx .
 
 build-docker-all: build-docker-kms build-docker-turn build-docker-wowza build-docker-nginx
 
@@ -42,11 +42,11 @@ stop:
 	docker-compose down
 
 clean-images:
-	docker rmi -f ${registry}research/kms
-	docker rmi -f ${registry}research/turn
-	docker rmi -f ${registry}research/wowza-4.5.0
-	docker rmi -f ${registry}research/wowza
-	docker rmi -f ${registry}research/nginx
+	docker rmi -f $(registry)/kms
+	docker rmi -f $(registry)/turn
+	docker rmi -f $(registry)/wowza-4.5.0
+	docker rmi -f $(registry)/wowza
+	docker rmi -f $(registry)/nginx
 
 clean:
 	docker rm -f `docker ps -aq`
@@ -55,38 +55,40 @@ login-ecr:
 	`aws ecr get-login`
 
 push-kms: login-ecr
-	docker push ${registry}research/kms:${tag}
+	docker push $(registry)/kms:$(tag)
 
 push-turn: login-ecr
-	docker push ${registry}research/turn:${tag}
+	docker push $(registry)/turn:$(tag)
 
 push-wowza-4.5.0: login-ecr
-	docker push ${registry}research/wowza-4.5.0:${tag}
+	docker push $(registry)/wowza-4.5.0:$(tag)
 
 push-wowza: login-ecr
-	docker push ${registry}research/wowza:${tag}
+	docker push $(registry)/wowza:$(tag)
 
 push-nginx: login-ecr
-	docker push ${registry}research/nginx:${tag}
+	docker tag $(registry)/nginx $(registry)/nginx:$(tag)
+	docker push $(registry)/nginx
+	docker push $(registry)/nginx:$(tag)
 
 push: push-kms push-turn push-wowza push-nginx
 
 pull-kms: login-ecr
-	docker pull ${registry}research/kms:${tag}
+	docker pull $(registry)/kms:$(tag)
 
 pull-turn: login-ecr
-	docker pull ${registry}research/turn:${tag}
+	docker pull $(registry)/turn:$(tag)
 
 pull-wowza: login-ecr
-	docker pull ${registry}research/wowza:${tag}
+	docker pull $(registry)/wowza:$(tag)
 
 pull-nginx: login-ecr
-	docker pull ${registry}research/nginx:${tag}
+	docker pull $(registry)/nginx:$(tag)
 
 pull: pull-kms pull-turn pull-wowza pull-nginx
 
 save:
-	docker save -o webrtc.tar ${registry}research/kms:${tag}
-							  ${registry}research/turn:${tag}
-						      ${registry}research/wowza:${tag}
-						      ${registry}research/nginx:${tag}
+	docker save -o webrtc.tar $(registry)/kms:$(tag)
+							  $(registry)/turn:$(tag)
+						      $(registry)/wowza:$(tag)
+						      $(registry)/nginx:$(tag)

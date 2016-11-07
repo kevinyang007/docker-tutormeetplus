@@ -13,7 +13,6 @@ node {
   }
 
   stage('push to ecr') {
-    sh '$(aws ecr get-login)'
     sh 'make push-nginx'
   }
 }
