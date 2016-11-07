@@ -9,10 +9,6 @@ node {
   }
 
   stage('build project') {
-    sh 'make build-docker-nginx'
-  }
-
-  stage('push to ecr') {
-    sh 'make push-nginx'
+    sh 'git tag --contains HEAD | xargs -I % sh -c "TAG=% make build-docker-nginx push-nginx"'
   }
 }
