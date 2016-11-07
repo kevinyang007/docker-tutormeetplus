@@ -8,6 +8,7 @@ app:
     - /sdpfiles:/sdpfiles
   labels:
     io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: app.enabled=true
 turn:
   image: ${DOCKER_REPO}/turn
   net: host
@@ -34,13 +35,8 @@ manarola:
     - redis-master:redis
   labels:
     io.rancher.container.pull_image: always
-# wowza:
-#   image: "${DOCKER_REPO}/wowza"
-#   net: host
-#   volumes:
-#     - /sdpfiles:/sdpfiles
-#  labels:
-#    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=$${stack_name}/app
+
 nginx:
   image: "${DOCKER_REPO}/nginx"
   ports:
@@ -83,3 +79,10 @@ redis-master:
 #     - redis-slave
 #   labels:
 #     io.rancher.scheduler.global: true
+# wowza:
+#   image: "${DOCKER_REPO}/wowza"
+#   net: host
+#   volumes:
+#     - /sdpfiles:/sdpfiles
+#  labels:
+#    io.rancher.container.pull_image: always
