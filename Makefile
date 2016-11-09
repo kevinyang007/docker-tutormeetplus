@@ -1,7 +1,7 @@
 #!/bin/sh
 
 registry ?= 123923422374.dkr.ecr.us-east-1.amazonaws.com/research
-tag ?= $(TAG)
+tag ?= latest
 
 echo:
 	@echo "\nRegistry: $(registry)\nTag: $(tag)\n"
