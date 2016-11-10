@@ -11,6 +11,9 @@ app:
     io.rancher.scheduler.affinity:host_label: app.enabled=true
 turn:
   image: ${DOCKER_REPO}/turn
+  environment:
+    - USERNAME=tutormeetplus
+    - PASSWORD=f73e38a6-d3a3-4d32-b5dc-d95e38d066ba
   net: host
   labels:
     io.rancher.container.pull_image: always
@@ -18,6 +21,9 @@ turn:
     io.rancher.scheduler.affinity:host_label: turn.enabled=true
 kms:
   image: ${DOCKER_REPO}/kms
+  environment:
+    - TURN_USERNAME=tutormeetplus
+    - TURN_PASSWORD=f73e38a6-d3a3-4d32-b5dc-d95e38d066ba
   volumes:
     - /mnt/s3/record:/mnt/s3/record
     - /mnt/nfs/record:/mnt/nfs/record

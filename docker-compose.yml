@@ -2,8 +2,10 @@ version: '2'
 services:
   kms:
     image: "${registry}research/kms"
-#    environment:
+    environment:
 #      - EXTERNAL_IP=
+       - TURN_USERNAME=tutormeetplus
+       - TURN_PASSWORD=f73e38a6-d3a3-4d32-b5dc-d95e38d066ba
 #      - MIN_PORT=49152
 #      - MAX_PORT=65535
     network_mode: host
@@ -13,11 +15,11 @@ services:
   turn:
     image: "${registry}research/turn"
     network_mode: host
-#    environment:
+    environment:
 #      - EXTERNAL_IP=LOCAL_IP
 #      - LOCAL_IP=
-#      - USERNAME=kurento
-#      - PASSWORD=kurento
+      - USERNAME=tutormeetplus
+      - PASSWORD=f73e38a6-d3a3-4d32-b5dc-d95e38d066ba
 #      - MIN_PORT=49152
 #      - MAX_PORT=65535
     restart: on-failure:10
