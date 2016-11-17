@@ -9,6 +9,7 @@ node {
   }
 
   stage('build project') {
-    sh 'git tag --contains HEAD | xargs -I % sh -c "TAG=% make build-docker-nginx push-nginx"'
+    sh 'make echo build-docker-nginx push-nginx'
+    sh 'git tag --contains HEAD | xargs -I % sh -c "TAG=% make echo build-docker-nginx push-nginx"'
   }
 }
