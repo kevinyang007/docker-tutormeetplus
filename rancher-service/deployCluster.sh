@@ -3,7 +3,7 @@ SERVICE=$1
 case $SERVICE in
 	"aws")
 	echo Applying $SERVICE settings
-	. secrets-aws-stage.sh
+	. secrets-stage.sh
 	;;
 	"tutor")
 	echo Applying $SERVICE settings
