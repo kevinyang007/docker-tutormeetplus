@@ -10,12 +10,12 @@ node {
 
   stage('build project') {
     sh 'make build-docker-kms'
-    sh 'registry=docker-cn.tutormeet.plus make build-docker-kms'
+    sh 'registry=docker.tutormeet.plus make build-docker-kms'
   }
 
   stage('push to ecr') {
     sh '$(aws ecr get-login)'
     sh 'make push-kms'
-    sh 'registry=docker-cn.tutormeet.plus make push-kms'
+    sh 'registry=docker.tutormeet.plus make push-kms'
   }
 }
