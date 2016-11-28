@@ -13,8 +13,8 @@ node {
     sh 'git tag --contains HEAD | xargs -I % sh -c "tag=% make echo build-docker-nginx push-nginx"'
   }
 
-  stage('build project to Docker-CN.tutormeet.plus') {
-    sh 'registry=docker-cn.tutormeet.plus make echo build-docker-nginx push-nginx'
-    sh 'git tag --contains HEAD | xargs -I % sh -c "tag=% registry=docker-cn.tutormeet.plus make echo build-docker-nginx push-nginx"'
+  stage('build project to docker.tutormeet.plus') {
+    sh 'registry=docker.tutormeet.plus make echo build-docker-nginx push-nginx'
+    sh 'git tag --contains HEAD | xargs -I % sh -c "tag=% registry=docker.tutormeet.plus make echo build-docker-nginx push-nginx"'
   }  
 }
