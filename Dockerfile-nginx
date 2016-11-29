@@ -27,8 +27,8 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
 RUN mkdir -p /etc/ssl/localcerts/
 
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
-COPY nginx/cert.pem /etc/ssl/localcerts/fullchain.pem
-COPY nginx/key.pem /etc/ssl/localcerts/privkey.pem
+COPY nginx/fullchain.pem /etc/ssl/localcerts/fullchain.pem
+COPY nginx/privkey.pem /etc/ssl/localcerts/privkey.pem
 
 COPY ./entrypoint-nginx.sh /entrypoint.sh
 CMD /entrypoint.sh
