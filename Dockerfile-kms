@@ -16,5 +16,6 @@ RUN echo "deb http://ubuntu.kurento.org trusty kms6" | tee /etc/apt/sources.list
     && rm -rf /var/lib/apt/lists/*
 
 COPY kms/certificate.pem /certificate.pem
+COPY kms/libkmselementsplugins.so /usr/lib/x86_64-linux-gnu/gstreamer-1.5/
 COPY ./entrypoint-kms.sh /entrypoint.sh
 CMD /entrypoint.sh

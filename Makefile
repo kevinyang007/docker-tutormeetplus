@@ -1,13 +1,16 @@
 #!/bin/sh
 
-registry ?= 123923422374.dkr.ecr.us-east-1.amazonaws.com/research
-tag ?= latest
+export registry ?= 123923422374.dkr.ecr.us-east-1.amazonaws.com/research
+export tag ?= latest
 
 echo:
 	@echo "\nRegistry: $(registry)\nTag: $(tag)\n"
 
 build-docker-kms:
 	docker build -t $(registry)/kms:$(tag) -f Dockerfile-kms .
+
+build-docker-kms-dev:
+	docker build -t ${registry}/kms-dev:$(tag) -f Dockerfile-kms-dev .
 
 build-docker-turn:
 	docker build -t $(registry)/turn:$(tag) -f Dockerfile-turn .
@@ -22,6 +25,9 @@ build-docker-all: build-docker-kms build-docker-turn build-docker-wowza build-do
 
 start-kms:
 	docker-compose up -d kms
+
+start-kms-dev:
+	docker-compose up -d kms-dev
 
 start-turn:
 	docker-compose up -d turn
@@ -57,6 +63,9 @@ login-ecr:
 push-kms: login-ecr
 	docker push $(registry)/kms:$(tag)
 
+push-kms-dev: login-ecr
+    docker push $(registry)/kms-dev:$(tag)
+
 push-turn: login-ecr
 	docker push $(registry)/turn:$(tag)
 
@@ -75,6 +84,9 @@ push: push-kms push-turn push-wowza push-nginx
 
 pull-kms: login-ecr
 	docker pull $(registry)/kms:$(tag)
+
+pull-kms-dev: login-ecr
+    docker pull $(registry)/kms-dev:$(tag)
 
 pull-turn: login-ecr
 	docker pull $(registry)/turn:$(tag)

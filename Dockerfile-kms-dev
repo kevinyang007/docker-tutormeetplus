@@ -3,6 +3,7 @@
 
 FROM      ubuntu:14.04
 
+EXPOSE 8888
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && apt-get install -y wget curl vim
@@ -14,5 +15,7 @@ RUN echo "deb http://ubuntu.kurento.org trusty-dev kms6" | tee /etc/apt/sources.
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+COPY kms/certificate.pem /certificate.pem
+COPY kms/libkmselementsplugins.so /usr/lib/x86_64-linux-gnu/gstreamer-1.5/
 COPY ./entrypoint-kms.sh /entrypoint.sh
 CMD /entrypoint.sh
