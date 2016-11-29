@@ -4,12 +4,16 @@
 
 ## Setup NFS server for Convoy NFS service
 
+http://rancher.com/setting-shared-volumes-convoy-nfs/
+
+
+
 #### Ubuntu nfs-kernel-server
 
 https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-14-04
 
 ```shell
-sudo apt-get update && sudo apt-get install nfs-kernel-server
+sudo apt-get update && sudo apt-get -y install nfs-kernel-server
 sudo vim /etc/exports
 ## /home       111.111.111.111(rw,sync,no_root_squash,no_subtree_check)
 ## /var/nfs    111.111.111.111(rw,sync,no_subtree_check)
