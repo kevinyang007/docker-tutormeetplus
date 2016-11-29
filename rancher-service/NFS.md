@@ -1,12 +1,10 @@
-# WebRTC NFS mount steps
-
-## Launch server
+# Convoy NFS service for Docker volume sync
 
 
 
-#### Prefer nfs-kernel-server
+## Setup NFS server for Convoy NFS service
 
-Setup NFS server on Ubuntu
+#### Ubuntu nfs-kernel-server
 
 https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-14-04
 
@@ -15,43 +13,65 @@ sudo apt-get update && sudo apt-get install nfs-kernel-server
 sudo vim /etc/exports
 ## /home       111.111.111.111(rw,sync,no_root_squash,no_subtree_check)
 ## /var/nfs    111.111.111.111(rw,sync,no_subtree_check)
-## /registry-data *(rw,sync,no_subtree_check)
+## /docker/convoy-nfs *(rw,sync,no_subtree_check)
 sudo exportfs -a
 sudo service nfs-kernel-server start
 ```
 
-#### Docker-based daemon (not tested yet)
+#### CentOS NFS server
+
+https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-centos-6
 
 ```shell
-docker run -d -p 2049:2049 -v $(pwd)/exports:/etc/exports --name nfs4 joebiellik/nfs4
+sudo -s
+yum install -y nfs-utils nfs-utils-lib
+chkconfig nfs on 
+service rpcbind start
+service nfs start
+## /home       111.111.111.111(rw,sync,no_root_squash,no_subtree_check)
+## /var/nfs    111.111.111.111(rw,sync,no_subtree_check)
+## /docker/convoy-nfs *(rw,sync,no_subtree_check)
+sudo exportfs -a
 ```
 
 
+
+## Start Convoy-NFS from Rancher Console
+
+![NFS Convoy](nfs-img1.png)
+
+![NFS options](nfs-img2.png)
+
+NFS Server: <IP>
+
+Mount Directory: /docker/convoy-nfs
+
+
+
+#### S3 Fuse File system for backup
 
 ```shell
-docker run -d --privileged -p 111:111/udp -p 111:111/tcp -p 2049:2049/udp -p 2049:2049/tcp -v $(pwd)/record:/record -v $(pwd)/exports:/etc/exports --name unfs3 macadmins/unfs3
+ACCESSKEY=<AWS access key idenetity>
+SECRET=<AWS Private key>
+BUCKET="tutormeetplus-convoy-nfs" #S3 bueckt name 
+MOUNT="/mnt/s3"
+
 ```
-
-
 
 ```shell
-docker run -d --privileged --name nfs -p 2049:2049/udp -p 2049:2049/tcp -p 111:111/tcp -p 111:111/udp cpuguy83/nfs-server /record
+echo $ACCESSKEY:$SECRET > ~/.passwd-s3fs
+sudo s3fs $BUCKET $MOUNT
 ```
 
 
 
-## Install NFS common lib for client side
 
-```
 
-sudo apt-get install -y nfs-common && \
-sudo mkdir -p /mnt/nfs/record && \
-sudo mount -t nfs4 172.16.7.238:/record /mnt/nfs/record
-```
+## Manual Install Convoy NFS without Rancher Service
 
 
 
-### Install Convoy plugin for Docker
+### Install Convoy plugin for Server
 
 https://github.com/rancher/convoy
 
@@ -66,6 +86,14 @@ sudo mkdir -p /etc/docker/plugins/
 sudo bash -c 'echo "unix:///var/run/convoy/convoy.sock" > /etc/docker/plugins/convoy.spec'
 ```
 
+#### Start convoy daemon
+
+```
+sudo convoy daemon --drivers vfs --driver-opts vfs.path=/mnt/registry-data &
+```
+
+
+
 
 
 #### Mount Convoy-NFS folder
@@ -77,17 +105,11 @@ sudo mount -t nfs 172.16.9.16:/docker/convoy-nfs/registry-data /mnt/registry-dat
 
 
 
-#### Start convoy daemon
+### Install NFS common lib for client side
 
 ```
-sudo convoy daemon --drivers vfs --driver-opts vfs.path=/mnt/registry-data &
-```
-
-
-
-#### S3 Fuse File system for backup
-
-```shell
-sudo s3fs tutormeetplus-convoy-nfs /docker/convoy-nfs -o passwd_file=~/.s3passwd -o nonempty
+sudo apt-get install -y nfs-common && \
+sudo mkdir -p /mnt/nfs/record && \
+sudo mount -t nfs4 172.16.7.238:/record /mnt/nfs/record
 ```
 
