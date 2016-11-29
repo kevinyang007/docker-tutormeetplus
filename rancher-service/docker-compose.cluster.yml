@@ -58,6 +58,8 @@ nginx:
    - NGINX_STATUS_ALLOW_IP=52.196.246.136
    - MATERIAL_IP=ec2-52-196-139-6.ap-northeast-1.compute.amazonaws.com
    - MATERIAL_PORT=3030
+  volumes:
+   - certs:/etc/ssl/localcerts
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.global: true
