@@ -3,9 +3,8 @@ app:
   links:
     - redis-master:redis
   volumes:
-    - /mnt/s3/record:/mnt/s3/record
-    - /mnt/nfs/record:/mnt/nfs/record
-    - /sdpfiles:/sdpfiles
+    - kms-record:/mnt/s3/record
+    - kms-sdpfile:/sdpfiles
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: app.enabled=true
@@ -25,9 +24,8 @@ kms:
     - TURN_USERNAME=tutormeetplus
     - TURN_PASSWORD=f73e38a6-d3a3-4d32-b5dc-d95e38d066ba
   volumes:
-    - /mnt/s3/record:/mnt/s3/record
-    - /mnt/nfs/record:/mnt/nfs/record
-    - /sdpfiles:/sdpfiles
+    - kms-record:/mnt/s3/record
+    - kms-sdpfile:/sdpfiles
   net: host
   labels:
     io.rancher.container.pull_image: always
@@ -94,3 +92,11 @@ redis-master:
 #     - /sdpfiles:/sdpfiles
 #  labels:
 #    io.rancher.container.pull_image: always
+
+volumes:
+  kms-record:
+    driver: rancher-nfs
+    per_container: true
+  kms-sdpfile:
+    driver: rancher-nfs
+    per_container: true
