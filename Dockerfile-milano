@@ -1,0 +1,3 @@
+FROM mhart/alpine-node:0.12
+MAINTAINER TingYao Hsu tingyaohsu@tutorabc.com
+RUN apk add --no-cache git cairo-dev make g++ gcc bash curl
