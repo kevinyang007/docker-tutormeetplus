@@ -69,6 +69,18 @@ sudo s3fs $BUCKET $MOUNT
 
 
 
+/etc/passwd-s3fs
+
+```
+$ACCESSKEY:$SECRET
+```
+
+/etc/fstab
+
+```
+tutormeetplus-convoy-nfs /mnt/s3 fuse.s3fs _netdev,allow_other 0 0
+```
+
 
 
 ## Manual Install Convoy NFS without Rancher Service
