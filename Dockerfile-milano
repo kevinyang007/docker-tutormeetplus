@@ -1,3 +1,21 @@
-FROM mhart/alpine-node:0.12
-MAINTAINER TingYao Hsu tingyaohsu@tutorabc.com
-RUN apk add --no-cache git cairo-dev make g++ gcc bash curl
+FROM node:slim
+MAINTAINER tingyaohsu@tutorabc.com
+
+RUN sed -i 's/main$/main non-free contrib/g' /etc/apt/sources.list
+
+# Install dependancy
+RUN apt-get update && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y \
+	unoconv \
+	libreoffice-dev \
+	graphicsmagick \
+	cabextract ttf-mscorefonts-installer ttf-root-installer ttf-wqy-zenhei fonts-arphic-ukai fonts-arphic-uming\
+	libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
+
+# Update Clear fonts of Windows System
+RUN mkdir ~/.fonts && wget -qO- http://plasmasturm.org/code/vistafonts-installer/vistafonts-installer | bash
+# Install yarn
+RUN curl -o- -L https://yarnpkg.com/install.sh | bash && \
+  	echo "" >> ~/.bashrc && \
+  	echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.bashrc && \
+  	echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.profile
