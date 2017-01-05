@@ -30,3 +30,10 @@ chmod +x /usr/local/bin/docker-compose
 exit
 ```
 
+
+
+China region
+
+```
+curl -sSL https://get.daocloud.io/docker | sh
+```
