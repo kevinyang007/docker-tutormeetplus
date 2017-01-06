@@ -14,8 +14,14 @@ RUN apt-get update && \
 
 # Update Clear fonts of Windows System
 RUN mkdir ~/.fonts && wget -qO- http://plasmasturm.org/code/vistafonts-installer/vistafonts-installer | bash
+
 # Install yarn
 RUN curl -o- -L https://yarnpkg.com/install.sh | bash && \
   	echo "" >> ~/.bashrc && \
-  	echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.bashrc && \
-  	echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.profile
+  	echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.bashrc
+
+ENV PATH $PATH:/root/.yarn/bin
+RUN yarn global add pm2 bunyan
+
+RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
