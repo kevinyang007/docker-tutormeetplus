@@ -5,17 +5,64 @@ FROM      ubuntu:14.04
 
 EXPOSE 8888
 ENV DEBIAN_FRONTEND noninteractive
+ARG tag
 
-RUN apt-get update && apt-get install -y wget curl vim
+# copy files
+COPY kms/patches/ kms/certificate.pem ./entrypoint-kms.sh ./
 
-RUN echo "deb http://ubuntu.kurento.org trusty kms6" | tee /etc/apt/sources.list.d/kurento.list \
+# install basic tools
+RUN apt-get update && apt-get install -y wget curl vim git \
+
+# setup git
+    && git config --global user.email "docker@tutorabc.com" \
+    && git config --global user.name "docker" \
+
+# retrieve kms-elements source code with the tag 6.6.1
+    && git clone https://github.com/Kurento/kms-elements.git \
+    && cd kms-elements \
+    && git checkout $tag \
+#    && git checkout `kurento-media-server -v | grep Version | awk {'print $2'}` \
+
+# retrieve kms-elements patches
+    && cp /kms-elements-patches/* ./ \
+
+# apply kms-elements patches
+    && git am *.patch \
+
+# install kms-elements build tools
+    && echo "deb http://ubuntu.kurento.org trusty-dev kms6" | sudo tee /etc/apt/sources.list.d/kurento-dev.list \
+    && wget -O - http://ubuntu.kurento.org/kurento.gpg.key | sudo apt-key add - \
+    && apt-get update \
+    && apt-get -y install $(cat debian/control | sed -e "s/$/\!\!/g" | tr -d '\n' | sed "s/\!\! / /g" | sed "s/\!\!/\n/g" | grep "Build-Depends" | sed "s/Build-Depends: //g" | sed "s/([^)]*)//g" | sed "s/, */ /g")  \
+
+# build kms-elements
+    && mkdir build \
+    && cd build \
+    && cmake -DCMAKE_INSTALL_PREFIX=/usr .. \
+    && make -j4 \
+    && cd .. \
+
+# uninstall kms-elements build tools
+    && apt-get -y remove --auto-remove --purge $(cat debian/control | sed -e "s/$/\!\!/g" | tr -d '\n' | sed "s/\!\! / /g" | sed "s/\!\!/\n/g" | grep "Build-Depends" | sed "s/Build-Depends: //g" | sed "s/([^)]*)//g" | sed "s/, */ /g") \
+
+# install kurento-media-server-6.0
+    && rm /etc/apt/sources.list.d/kurento-dev.list \
+    && echo "deb http://ubuntu.kurento.org trusty kms6" | tee /etc/apt/sources.list.d/kurento.list \
     && wget -O - http://ubuntu.kurento.org/kurento.gpg.key | apt-key add - \
     && apt-get update \
     && apt-get -y install kurento-media-server-6.0 \
+
+# install built kms-elements
+#RUN apt-get -y install make cmake \
+    && apt-get -y install make cmake \
+    && cd /kms-elements/build \
+    && make install/fast \
+    && apt-get -y remove --auto-remove --purge make cmake \
+
+# remove runtime files
+    && rm -rf /kms-elements-patches \
+    && rm -rf /kms-elements \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY kms/certificate.pem /certificate.pem
-COPY kms/libkmselementsplugins.so /usr/lib/x86_64-linux-gnu/gstreamer-1.5/
-COPY ./entrypoint-kms.sh /entrypoint.sh
-CMD /entrypoint.sh
+CMD /entrypoint-kms.sh

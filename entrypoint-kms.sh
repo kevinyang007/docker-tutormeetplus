@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 #EXTERNALIP=${EXTERNAL_IP:=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)}
 EXTERNALIP=${EXTERNAL_IP:=$(curl -s icanhazip.com)}
 
@@ -24,5 +26,8 @@ echo "maxPort="${MAXPORT} >> /etc/kurento/modules/kurento/BaseRtpEndpoint.conf.i
 if [ -f /etc/default/kurento-media-server ] ; then
     . /etc/default/kurento-media-server
 fi
+
+# Remove ipv6 local loop until ipv6 is supported
+cat /etc/hosts | sed '/::1/d' | tee /etc/hosts > /dev/null
 
 exec /usr/bin/kurento-media-server "$@"

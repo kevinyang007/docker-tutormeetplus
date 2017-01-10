@@ -22,8 +22,9 @@ services:
 #      - MAX_PORT=65535
     network_mode: host
     volumes:
-      - /mnt/s3/record:/mnt/s3/record
+      - /record:/record
       - /mnt/nfs/record:/mnt/nfs/record
+      - /home/ubuntu/workspace/kurento/kms-elements:/workspace/kms-elements 
   turn:
     image: "${registry}/turn"
     network_mode: host
@@ -62,7 +63,7 @@ services:
     environment:
      - CAGLIARI_IP=172.31.17.187
      - CAGLIARI_PORT=8080
-     - MANAROLA_IP=172.31.24.162
+     - MANAROLA_IP=172.31.17.187
      - MANAROLA_PORT=3000
      - MATERIAL_IP=172.16.7.180
      - MATERIAL_PORT=3030

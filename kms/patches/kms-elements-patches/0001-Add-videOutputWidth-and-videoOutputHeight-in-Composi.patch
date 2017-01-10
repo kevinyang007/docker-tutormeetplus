@@ -1,0 +1,203 @@
+From 9427a6337511644305f1afde8e75a8124b260b17 Mon Sep 17 00:00:00 2001
+From: sendoh <yungyu.chen@gmail.com>
+Date: Fri, 6 Jan 2017 10:47:30 +0000
+Subject: [PATCH] Add videOutputWidth and videoOutputHeight in Composite
+ constructor
+
+---
+ src/gst-plugins/kmscompositemixer.c                | 72 +++++++++++++++++++++-
+ .../implementation/objects/CompositeImpl.cpp       | 13 +++-
+ .../implementation/objects/CompositeImpl.hpp       |  4 +-
+ src/server/interface/elements.Composite.kmd.json   | 16 ++++-
+ 4 files changed, 98 insertions(+), 7 deletions(-)
+
+diff --git a/src/gst-plugins/kmscompositemixer.c b/src/gst-plugins/kmscompositemixer.c
+index c47d93b..fc70756 100644
+--- a/src/gst-plugins/kmscompositemixer.c
++++ b/src/gst-plugins/kmscompositemixer.c
+@@ -26,6 +26,8 @@
+ #include <math.h>
+ 
+ #define LATENCY 600             //ms
++#define VIDEO_OUTPUT_WIDTH_DEFAULT 320
++#define VIDEO_OUTPUT_HEIGHT_DEFAULT 240
+ 
+ #define PLUGIN_NAME "compositemixer"
+ 
+@@ -97,6 +99,16 @@ struct _KmsCompositeMixerPrivate
+   gint output_width, output_height;
+ };
+ 
++enum
++{
++  PROP_0,
++  PROP_VIDEO_OUTPUT_WIDTH,
++  PROP_VIDEO_OUTPUT_HEIGHT,
++  N_PROPERTIES
++};
++
++static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
++
+ /* class initialization */
+ 
+ G_DEFINE_TYPE_WITH_CODE (KmsCompositeMixer, kms_composite_mixer,
+@@ -758,6 +770,48 @@ kms_composite_mixer_finalize (GObject * object)
+ }
+ 
+ static void
++kms_composite_mixer_set_property (GObject * object, guint property_id,
++    const GValue * value, GParamSpec * pspec)
++{
++  KmsCompositeMixer *self = KMS_COMPOSITE_MIXER (object);
++
++  switch (property_id) {
++    case PROP_VIDEO_OUTPUT_WIDTH:
++      self->priv->output_width = g_value_get_int (value);
++      GST_DEBUG ("output_width: %d", self->priv->output_width);
++      break;
++    case PROP_VIDEO_OUTPUT_HEIGHT:
++      self->priv->output_height = g_value_get_int (value);
++      GST_DEBUG ("output_height: %d", self->priv->output_height);
++      break;
++    default:
++      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
++      break;
++  }
++}
++
++static void
++kms_composite_mixer_get_property (GObject * object, guint property_id,
++    GValue * value, GParamSpec * pspec)
++{
++  KmsCompositeMixer *self = KMS_COMPOSITE_MIXER (object);
++
++  switch (property_id) {
++    case PROP_VIDEO_OUTPUT_WIDTH:
++      g_value_set_int (value, self->priv->output_width);
++      GST_DEBUG ("output_width: %d", self->priv->output_width);
++      break;
++    case PROP_VIDEO_OUTPUT_HEIGHT:
++      g_value_set_int (value, self->priv->output_height);
++      GST_DEBUG ("output_height: %d", self->priv->output_height);
++      break;
++    default:
++      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
++      break;
++  }
++}
++
++static void
+ kms_composite_mixer_class_init (KmsCompositeMixerClass * klass)
+ {
+   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+@@ -771,6 +825,22 @@ kms_composite_mixer_class_init (KmsCompositeMixerClass * klass)
+   gobject_class->dispose = GST_DEBUG_FUNCPTR (kms_composite_mixer_dispose);
+   gobject_class->finalize = GST_DEBUG_FUNCPTR (kms_composite_mixer_finalize);
+ 
++  gobject_class->set_property = kms_composite_mixer_set_property;
++  gobject_class->get_property = kms_composite_mixer_get_property;
++
++  obj_properties[PROP_VIDEO_OUTPUT_WIDTH] =
++      g_param_spec_int ("video-output-width", "Video ouptut width", "The video output width",
++                        0, G_MAXINT, VIDEO_OUTPUT_WIDTH_DEFAULT,
++                        G_PARAM_READWRITE | GST_PARAM_MUTABLE_READY);
++
++  obj_properties[PROP_VIDEO_OUTPUT_HEIGHT] =
++      g_param_spec_int ("video-output-height", "Video ouptut height", "The video output height",
++                        0, G_MAXINT, VIDEO_OUTPUT_HEIGHT_DEFAULT,
++                        G_PARAM_READWRITE | GST_PARAM_MUTABLE_READY);
++
++  g_object_class_install_properties (gobject_class,
++      N_PROPERTIES, obj_properties);
++
+   base_hub_class->handle_port =
+       GST_DEBUG_FUNCPTR (kms_composite_mixer_handle_port);
+   base_hub_class->unhandle_port =
+@@ -799,8 +869,6 @@ kms_composite_mixer_init (KmsCompositeMixer * self)
+   self->priv->ports = g_hash_table_new_full (g_int_hash, g_int_equal,
+       release_gint, kms_composite_mixer_port_data_destroy);
+   //TODO:Obtain the dimensions of the bigger input stream
+-  self->priv->output_height = 600;
+-  self->priv->output_width = 800;
+   self->priv->n_elems = 0;
+ 
+   self->priv->loop = kms_loop_new ();
+diff --git a/src/server/implementation/objects/CompositeImpl.cpp b/src/server/implementation/objects/CompositeImpl.cpp
+index 393b423..dfd8a30 100644
+--- a/src/server/implementation/objects/CompositeImpl.cpp
++++ b/src/server/implementation/objects/CompositeImpl.cpp
+@@ -32,16 +32,23 @@ namespace kurento
+ {
+ 
+ CompositeImpl::CompositeImpl (const boost::property_tree::ptree &conf,
+-                              std::shared_ptr<MediaPipeline> mediaPipeline) : HubImpl (conf,
++                              std::shared_ptr<MediaPipeline> mediaPipeline,
++                              int videoOutputWidth,
++                              int videoOutputHeight) : HubImpl (conf,
+                                     std::dynamic_pointer_cast<MediaObjectImpl> (mediaPipeline), FACTORY_NAME)
+ {
++  GstElement *element = getGstreamerElement();
++  g_object_set (G_OBJECT (element), "video-output-width", videoOutputWidth,
++                "video-output-height", videoOutputHeight, NULL);
+ }
+ 
+ MediaObjectImpl *
+ CompositeImplFactory::createObject (const boost::property_tree::ptree &conf,
+-                                    std::shared_ptr<MediaPipeline> mediaPipeline) const
++                                    std::shared_ptr<MediaPipeline> mediaPipeline,
++                                    int videoOutputWidth,
++                                    int videoOutputHeight) const
+ {
+-  return new CompositeImpl (conf, mediaPipeline);
++  return new CompositeImpl (conf, mediaPipeline, videoOutputWidth, videoOutputHeight);
+ }
+ 
+ CompositeImpl::StaticConstructor CompositeImpl::staticConstructor;
+diff --git a/src/server/implementation/objects/CompositeImpl.hpp b/src/server/implementation/objects/CompositeImpl.hpp
+index 630c656..84f4269 100644
+--- a/src/server/implementation/objects/CompositeImpl.hpp
++++ b/src/server/implementation/objects/CompositeImpl.hpp
+@@ -36,7 +36,9 @@ class CompositeImpl : public HubImpl, public virtual Composite
+ public:
+ 
+   CompositeImpl (const boost::property_tree::ptree &conf,
+-                 std::shared_ptr<MediaPipeline> mediaPipeline);
++                 std::shared_ptr<MediaPipeline> mediaPipeline,
++                 int videoOutputWidth,
++                 int videoOutputHeight);
+ 
+   virtual ~CompositeImpl () {};
+ 
+diff --git a/src/server/interface/elements.Composite.kmd.json b/src/server/interface/elements.Composite.kmd.json
+index ea84463..3b17599 100644
+--- a/src/server/interface/elements.Composite.kmd.json
++++ b/src/server/interface/elements.Composite.kmd.json
+@@ -12,9 +12,23 @@
+               "name": "mediaPipeline",
+               "doc": "the :rom:cls:`MediaPipeline` to which the dispatcher belongs",
+               "type": "MediaPipeline"
++            },
++            {
++              "name": "videoOutputWidth",
++              "doc": "Video output width",
++              "type": "int",
++              "optional": true,
++              "defaultValue": 320
++            },
++            {
++              "name": "videoOutputHeight",
++              "doc": "Video output height",
++              "type": "int",
++              "optional": true,
++              "defaultValue": 240
+             }
+           ]
+         }
+     }
+   ]
+-}
+\ No newline at end of file
++}
+-- 
+1.9.1
+

@@ -1,7 +1,9 @@
 node {
   stage('setup environment') {
     deleteDir()
+    env.PYENV_VERSION = "2.7"
     env.PATH = "/usr/local/bin:${env.PATH}"    
+    env.DOCKER_NAME = "kms"
   }
 
   stage('checkout project') {
@@ -11,6 +13,11 @@ node {
   stage('build project') {
     sh 'make build-docker-kms'
     sh 'registry=docker.tutormeet.plus make build-docker-kms'
+  }
+
+  stage('squash Image') {
+    sh 'make squash-docker-kms'
+    sh 'registry=docker.tutormeet.plus make squash-docker-kms'
   }
 
   stage('push to ecr') {

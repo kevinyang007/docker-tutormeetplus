@@ -7,10 +7,10 @@ echo:
 	@echo "\nRegistry: $(registry)\nTag: $(tag)\n"
 
 build-docker-kms:
-	docker build -t $(registry)/kms:$(tag) -f Dockerfile-kms .
+	docker build -t $(registry)/kms:$(tag) -f Dockerfile-kms --build-arg tag=6.6.1 .
 
 build-docker-kms-dev:
-	docker build -t ${registry}/kms-dev:$(tag) -f Dockerfile-kms-dev .
+	docker build -t ${registry}/kms-dev:$(tag) -f Dockerfile-kms-dev --build-arg tag=6.6.1 .
 
 build-docker-turn:
 	docker build -t $(registry)/turn:$(tag) -f Dockerfile-turn .
@@ -22,6 +22,9 @@ build-docker-nginx:
 	docker build -t $(registry)/nginx -f Dockerfile-nginx .
 
 build-docker-all: build-docker-kms build-docker-turn build-docker-wowza build-docker-nginx
+
+squash-docker-kms:
+	docker-squash -t $(registry)/kms:$(tag) $(registry)/kms:$(tag)
 
 start-kms:
 	docker-compose up -d kms
@@ -40,6 +43,9 @@ start-wowza:
 
 start-nginx:
 	docker-compose up -d nginx
+
+start-manarola:
+	docker-compose up -d manarola
 
 start:
 	docker-compose up -d app
@@ -96,6 +102,9 @@ pull-wowza: login-ecr
 
 pull-nginx: login-ecr
 	docker pull $(registry)/nginx:$(tag)
+
+pull-manarola: login-ecr
+	docker pull $(registry)/manarola:$(tag)
 
 pull: pull-kms pull-turn pull-wowza pull-nginx
 
