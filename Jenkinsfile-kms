@@ -16,6 +16,7 @@ node {
   }
 
   stage('squash Image') {
+    sh 'eval "$(pyenv init -)"'
     sh 'make squash-docker-kms'
     sh 'registry=docker.tutormeet.plus make squash-docker-kms'
   }
