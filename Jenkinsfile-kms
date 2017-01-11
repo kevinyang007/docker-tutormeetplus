@@ -16,9 +16,8 @@ node {
   }
 
   stage('squash Image') {
-    sh 'eval "$(pyenv init -)"'
-    sh 'make squash-docker-kms'
-    sh 'registry=docker.tutormeet.plus make squash-docker-kms'
+    sh 'eval "$(pyenv init -)"; make squash-docker-kms'
+    sh 'eval "$(pyenv init -)"; registry=docker.tutormeet.plus make squash-docker-kms'
   }
 
   stage('push to ecr') {
