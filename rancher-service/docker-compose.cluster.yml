@@ -1,73 +1,83 @@
-app:
-  image: ${DOCKER_REPO}/cagliari:develop
-  links:
-    - redis-master:redis
-  volumes:
-    - kms-record:/mnt/s3/record
-    - kms-sdpfile:/sdpfiles
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.affinity:host_label: app.enabled=true
-turn:
-  image: ${DOCKER_REPO}/turn
-  environment:
-    - USERNAME=tutormeetplus
-    - PASSWORD=f73e38a6-d3a3-4d32-b5dc-d95e38d066ba
-  net: host
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.global: true
-    io.rancher.scheduler.affinity:host_label: turn.enabled=true
-kms:
-  image: ${DOCKER_REPO}/kms
-  environment:
-    - TURN_USERNAME=tutormeetplus
-    - TURN_PASSWORD=f73e38a6-d3a3-4d32-b5dc-d95e38d066ba
-  volumes:
-    - kms-record:/mnt/s3/record
-    - kms-sdpfile:/sdpfiles
-  net: host
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.global: true
-    io.rancher.scheduler.affinity:host_label: kms.enabled=true
-manarola:
-  ports:
-  - 9116:9116
-  image: ${DOCKER_REPO}/manarola:develop
-  links:
-    - redis-master:redis
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=$${stack_name}/app
-
-nginx:
-  image: "${DOCKER_REPO}/nginx"
-  ports:
-   - "443:443"
-   - "3000:3000"
-   - "3030:3030"
-  environment:
-   - CAGLIARI_IP=app
-   - CAGLIARI_PORT=80
-   - MANAROLA_IP=manarola
-   - MANAROLA_PORT=3000
-#     - NGINX_STATUS_ALLOW_IP=metrics.dev.tutormeet.plus
-   - NGINX_STATUS_ALLOW_IP=52.196.246.136
-   - MATERIAL_IP=ec2-52-196-139-6.ap-northeast-1.compute.amazonaws.com
-   - MATERIAL_PORT=3030
-  volumes:
-   - certs:/etc/ssl/localcerts
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.global: true
-    io.rancher.scheduler.affinity:host_label: proxy.enabled=true
-redis-master:
-  image: redis
-  ports: 
-    - 6379:6379
-  volumes:
-    - /redis_data:/data
+version: '2'
+services:
+  app:
+    image: docker.tutormeet.plus/cagliari:1.0.1-rc12
+    stdin_open: true
+    volumes:
+    - /mnt/rancher-volume/kms-record:/mnt/s3/record
+    tty: true
+    links:
+    - redis:redis
+    labels:
+      io.rancher.scheduler.affinity:host_label: app.enabled=true
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+  kms:
+    image: docker.tutormeet.plus/kms:6.6.1.2
+    environment:
+      TURN_PASSWORD: f73e38a6-d3a3-4d32-b5dc-d95e38d066ba
+      TURN_USERNAME: tutormeetplus
+    stdin_open: true
+    network_mode: host
+    volumes:
+    - /mnt/rancher-volume/kms-record:/mnt/s3/record
+    tty: true
+    labels:
+      io.rancher.scheduler.affinity:host_label: kms.enabled=true
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+  proxy:
+    image: docker.tutormeet.plus/nginx
+    environment:
+      CAGLIARI_IP: app
+      CAGLIARI_PORT: '80'
+      MANAROLA_IP: manarola
+      MANAROLA_PORT: '3000'
+      NGINX_STATUS_ALLOW_IP: 52.196.246.136
+      MATERIAL_IP: 172.16.7.180
+      MATERIAL_PORT: '3030'
+    stdin_open: true
+    volumes:
+    - /mnt/rancher-volume/certs:/etc/ssl/localcerts
+    tty: true
+    ports:
+    - 443:443/tcp
+    - 3000:3000/tcp
+    - 3030:3030/tcp
+    labels:
+      io.rancher.scheduler.affinity:host_label: proxy.enabled=true
+      io.rancher.scheduler.global: 'true'
+  manarola:
+    image: docker.tutormeet.plus/manarola
+    stdin_open: true
+    tty: true
+    links:
+    - redis:redis
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: app.enabled=true
+  turn:
+    image: docker.tutormeet.plus/turn:4.4.5.3
+    environment:
+      PASSWORD: f73e38a6-d3a3-4d32-b5dc-d95e38d066ba
+      USERNAME: tutormeetplus
+    stdin_open: true
+    network_mode: host
+    tty: true
+    labels:
+      io.rancher.scheduler.affinity:host_label: turn.enabled=true
+      io.rancher.scheduler.global: 'true'
+  redis:
+    image: redis
+    stdin_open: true
+    volumes:
+    - /mnt/rancher-volume/redis_data:/data
+    tty: true
+    ports:
+    - 6379:6379/tcp
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: redis.enabled=true
 # redis-slave:
 #   image: redis
 #   command: redis-server --slaveof redis-master 6379
@@ -92,11 +102,3 @@ redis-master:
 #     - /sdpfiles:/sdpfiles
 #  labels:
 #    io.rancher.container.pull_image: always
-
-volumes:
-  kms-record:
-    driver: rancher-nfs
-    per_container: true
-  kms-sdpfile:
-    driver: rancher-nfs
-    per_container: true
