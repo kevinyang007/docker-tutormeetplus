@@ -1,10 +1,100 @@
-app:
-  scale: 1
-turn:
-  scale: 1
-kms:
-  scale: 1
-redis:
-  scale: 1
-manarola:
-  scale: 1
+version: '2'
+services:
+  app:
+    image: docker.tutormeet.plus/cagliari
+    links:
+      - redis-master:redis
+    volumes:
+      - kms-record:/mnt/s3/record
+      - kms-sdpfile:/sdpfiles
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: app.enabled=true
+  turn:
+    image: docker.tutormeet.plus/turn
+    environment:
+      - USERNAME=tutormeetplus
+      - PASSWORD=f73e38a6-d3a3-4d32-b5dc-d95e38d066ba
+    network_mode: host
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: true
+      io.rancher.scheduler.affinity:host_label: turn.enabled=true
+  kms:
+    image: docker.tutormeet.plus/kms
+    environment:
+      - TURN_USERNAME=tutormeetplus
+      - TURN_PASSWORD=f73e38a6-d3a3-4d32-b5dc-d95e38d066ba
+    volumes:
+      - kms-record:/mnt/s3/record
+      - kms-sdpfile:/sdpfiles
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: true
+      io.rancher.scheduler.affinity:host_label: kms.enabled=true
+  manarola:
+    ports:
+    - 9116:9116
+    image: docker.tutormeet.plus/manarola:develop
+    links:
+      - redis-master:redis
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=$${stack_name}/app
+
+  nginx:
+    image: "docker.tutormeet.plus/nginx"
+    ports:
+     - "443:443"
+     - "3000:3000"
+     - "3030:3030"
+    environment:
+     - CAGLIARI_IP=app
+     - CAGLIARI_PORT=80
+     - MANAROLA_IP=manarola
+     - MANAROLA_PORT=3000
+     - NGINX_STATUS_ALLOW_IP=52.196.246.136
+     - MATERIAL_IP=milano
+     - MATERIAL_PORT=3030
+    volumes:
+     - certs:/etc/ssl/localcerts
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: true
+      io.rancher.scheduler.affinity:host_label: proxy.enabled=true
+  redis-master:
+    image: redis
+    ports: 
+      - 6379:6379
+    volumes:
+      - redis-data:/data
+  milano:
+    image: docker.tutormeet.plus/milano
+    volumes:
+    - material:/app/materials
+    links:
+    - redis-master:redis
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.sidekicks: mongo
+  mongo:
+    image: docker.tutormeet.plus/milano
+    stdin_open: true
+    tty: true
+    links:
+    - redis-master:redis
+    labels:
+      io.rancher.container.pull_image: always
+volumes:
+  certs:
+    external: true
+    driver: 'null'
+  kms-record:
+    external: true
+    driver: 'null'
+  kms-sdpfile:
+    external: true
+    driver: 'null'
+  redis-data:
+    external: true
+    driver: 'null'
