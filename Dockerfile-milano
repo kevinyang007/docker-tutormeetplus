@@ -1,26 +1,29 @@
 FROM node:slim
 MAINTAINER tingyaohsu@tutorabc.com
 
+# Add backports repo
 RUN sed -i 's/main$/main non-free contrib/g' /etc/apt/sources.list
+RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list
+
+# Add yarn repo
+RUN apt-get update && apt-get install -y apt-transport-https
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+
 
 # Install dependancy
 RUN apt-get update && \
-	DEBIAN_FRONTEND=noninteractive apt-get install -y \
-	unoconv \
-	libreoffice-dev \
+	DEBIAN_FRONTEND=noninteractive \
+	apt-get install -y -t jessie-backports \
+	yarn unzip \
+	libreoffice \
 	graphicsmagick \
-	cabextract ttf-mscorefonts-installer ttf-root-installer ttf-wqy-zenhei fonts-arphic-ukai fonts-arphic-uming\
+	cabextract ttf-mscorefonts-installer ttf-root-installer ttf-wqy-zenhei fonts-arphic-ukai fonts-arphic-uming \
 	libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
 
 # Update Clear fonts of Windows System
 RUN mkdir ~/.fonts && wget -qO- http://plasmasturm.org/code/vistafonts-installer/vistafonts-installer | bash
 
-# Install yarn
-RUN curl -o- -L https://yarnpkg.com/install.sh | bash && \
-  	echo "" >> ~/.bashrc && \
-  	echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.bashrc
-
-ENV PATH $PATH:/root/.yarn/bin
 RUN yarn global add pm2 bunyan
 
 RUN apt-get clean
