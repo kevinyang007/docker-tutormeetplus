@@ -75,8 +75,8 @@ push-kms-dev: login-ecr
 push-turn: login-ecr
 	docker push $(registry)/turn:$(tag)
 
-push-wowza-4.5.0: login-ecr
-	docker push $(registry)/wowza-4.5.0:$(tag)
+push-wowza-4.6.0: login-ecr
+	docker push $(registry)/wowza-4.6.0:$(tag)
 
 push-wowza: login-ecr
 	docker push $(registry)/wowza:$(tag)

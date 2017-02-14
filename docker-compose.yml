@@ -10,7 +10,7 @@ services:
 #      - MAX_PORT=65535
     network_mode: host
     volumes:
-      - /mnt/s3/record:/mnt/s3/record
+      - /record:/record
       - /mnt/nfs/record:/mnt/nfs/record
   kms-dev:
     image: "${registry}/kms-dev"
