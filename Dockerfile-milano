@@ -1,4 +1,4 @@
-FROM node:slim-6
+FROM node:6-slim
 MAINTAINER tingyaohsu@tutorabc.com
 
 # Add backports repo
